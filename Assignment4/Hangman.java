@@ -14,42 +14,44 @@ import java.awt.*;
 public class Hangman extends ConsoleProgram {
 
 	private static final String GREETING = "Welcome to Hangman!";
-	private static final int MAXBADGUESS = 8; 
+	private static final int MAXBADGUESS = 8; //based on the number of limbs of the hangman
+	private static RandomGenerator rgen = RandomGenerator.getInstance();
 	
     public void run() {
-		setWord();
 		initGameValues();
 		runGame();
 		endGame();
 	}
 
     private void initGameValues() {
-		currentRound = 0;
 		isOutOfGuesses = false;
 		isWordFinished = false;
+		setActualWord();
 		initGuessedWord();
 	}
 
+    private void setActualWord() {
+    	HangmanLexicon hl = new HangmanLexicon();
+    	int wordIndex = rgen.nextInt(hl.getWordCount());
+		actualWord = hl.getWord(wordIndex);
+	}
+    
 	private void initGuessedWord() {
 		guessedWord = "";
 		for (int i = 0; i < actualWord.length(); i++) {
 			guessedWord = guessedWord + "-";
-		}
-		
+		}	
 	}
 
-	/*
-     * TODO add logic to check for ending state
-     */
     private void endGame() {
-		println("This is the end");		
-	}
-
-	/*
-     * TODO bring in lexicon
-     */
-    private void setWord() {
-		actualWord = "SALMON";
+    	if (isWordFinished) {
+    		println("You guessed the word: " + actualWord);
+    		println("You win.");
+    	} else if (isOutOfGuesses) {
+    		println("You're completely hung.");
+    		println("The word was: " + actualWord);
+    		println("You lose.");
+    	}
 	}
     
     private void runGame() {
@@ -57,46 +59,10 @@ public class Hangman extends ConsoleProgram {
     	while(!isOutOfGuesses && !isWordFinished) {
     		printGameState();
     		updateGameState(readGuess());
-    		currentRound++;
     		checkWordFinished();
     		checkOutOfGuesses();
     	}
     }
-
-    
-    /*
-     * Based on guessed letter, actual word, and guessed word -
-     * Updates guessed word and guess count
-     */
-    private void updateGameState(String guessedLetter) {
-		if (guessedWord.contains(guessedLetter)) {
-			return;
-		} else if (actualWord.contains(guessedLetter)) {
-			updateGuessedWord(guessedLetter);
-		} else {
-			badGuessCount++;
-		}
-	}
-
-    /*
-     * Inputs - letter that is confirmed as being in actualWord
-     * Output - no return, guessedWord is updated to include the guessed letter in proper position
-     */
-	private void updateGuessedWord(String guessedLetter) {
-		int guessIndex = actualWord.indexOf(guessedLetter);
-		guessedWord = guessedWord.substring(0, guessIndex) + guessedLetter + guessedWord.substring(guessIndex + 1);
-	}
-
-	private String readGuess() {
-		String unsafeGuess = readLine("").trim().toUpperCase();
-		if (!unsafeGuess.matches("[a-zA-z]") || unsafeGuess.length() != 1) {
-			println("Please enter a single letter.");
-			return readGuess();
-		} else {
-			return unsafeGuess.toUpperCase();
-		}
-		
-	}
 
 	private void printGameState() {
     	int guessRemaining = MAXBADGUESS - badGuessCount;
@@ -107,23 +73,75 @@ public class Hangman extends ConsoleProgram {
 			println("You now have " + guessRemaining + " guesses left.");
 		}
 	}
+	
+	/*
+	 * reads input from user, which is intended to be a single English character
+	 * if input does not meet this requirement, user will be prompted to try again
+	 */
+	private String readGuess() {
+		String unsafeGuess = readLine("Your Guess: ").trim().toUpperCase();
+		if (!unsafeGuess.matches("[a-zA-z]") || unsafeGuess.length() != 1) {
+			println("Please enter a single letter.");
+			return readGuess();
+		} else {
+			return unsafeGuess.toUpperCase();
+		}
+	}
+    
+    /*
+     * Based on guessed letter, actual word, and guessed word -
+     * Updates guessed word and guess count
+     */
+    private void updateGameState(String guessedLetter) {
+		if (guessedWord.contains(guessedLetter)) {
+			return;
+		} else if (actualWord.contains(guessedLetter)) {
+			println("That guess is correct.");
+			updateGuessedWord(guessedLetter);
+		} else {
+			badGuessCount++;
+			println("There is no " + guessedLetter + " in the word.");
+			//whatever other action that will happen for bad guesses can go here
+		}
+	}
+
+    /*
+     * Inputs - letter that is confirmed as being in actualWord
+     * Output - no return, guessedWord is updated to include the guessed letter in proper position
+     */
+	private void updateGuessedWord(String guessedLetter) {
+		int guessIndex = 0;
+		int indexOffset = 0;
+		//we loop here because there can potentially be multiple instances of guessedLetter in actualWord
+		while (indexOffset < actualWord.length()) { //could be while true, but this protects against double letters at end of word
+			guessIndex = actualWord.indexOf(guessedLetter, indexOffset);
+			if (guessIndex < 0) return; //exits loop if no further instances of guessed letter are in actual word
+			else {
+				guessedWord = guessedWord.substring(0, guessIndex) + guessedLetter + guessedWord.substring(guessIndex + 1);
+				indexOffset = guessIndex + 1;
+			}
+		}
+	}
 
 	private void checkWordFinished() {
-		// TODO Auto-generated method stub
-		
+		if (guessedWord.equals(actualWord)) {
+			isWordFinished = true;
+		} else {
+			return;
+		}
 	}
 
 	private void checkOutOfGuesses() {
-
+		if (MAXBADGUESS - badGuessCount <= 0) {
+			isOutOfGuesses = true;
+		} else {
+			return;
 		}
+	}
 		
-
-
 	private boolean isWordFinished;
     private boolean isOutOfGuesses;
     private int badGuessCount;
-	private int roundNum;
-    private int currentRound;
     private String actualWord;
     private String guessedWord;
 }
