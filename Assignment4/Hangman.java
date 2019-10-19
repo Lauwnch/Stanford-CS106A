@@ -16,6 +16,14 @@ public class Hangman extends ConsoleProgram {
 	private static final String GREETING = "Welcome to Hangman!";
 	private static final int MAXBADGUESS = 8; //based on the number of limbs of the hangman
 	private static RandomGenerator rgen = RandomGenerator.getInstance();
+	private HangmanCanvas canvas;
+	private HangmanLexicon hl;
+	
+	public void init() {
+		hl = new HangmanLexicon();
+		canvas = new HangmanCanvas();
+		add(canvas);
+	}
 	
     public void run() {
 		initGameValues();
@@ -24,6 +32,7 @@ public class Hangman extends ConsoleProgram {
 	}
 
     private void initGameValues() {
+		canvas.reset();
 		isOutOfGuesses = false;
 		isWordFinished = false;
 		setActualWord();
@@ -31,7 +40,6 @@ public class Hangman extends ConsoleProgram {
 	}
 
     private void setActualWord() {
-    	HangmanLexicon hl = new HangmanLexicon();
     	int wordIndex = rgen.nextInt(hl.getWordCount());
 		actualWord = hl.getWord(wordIndex);
 	}
@@ -100,6 +108,7 @@ public class Hangman extends ConsoleProgram {
 			updateGuessedWord(guessedLetter);
 		} else {
 			badGuessCount++;
+			canvas.noteIncorrectGuess(guessedLetter.charAt(0));
 			println("There is no " + guessedLetter + " in the word.");
 			//whatever other action that will happen for bad guesses can go here
 		}
@@ -141,7 +150,11 @@ public class Hangman extends ConsoleProgram {
 		
 	private boolean isWordFinished;
     private boolean isOutOfGuesses;
-    private int badGuessCount;
+    private static int badGuessCount;
     private String actualWord;
     private String guessedWord;
+
+	public static int getBadGuessCount() {
+		return badGuessCount;
+	}
 }
