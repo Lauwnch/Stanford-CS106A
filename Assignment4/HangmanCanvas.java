@@ -13,7 +13,7 @@ public class HangmanCanvas extends GCanvas {
 		badGuesses.setFont("*-*-16");
 		add(badGuesses);
 		
-		guessedWord = new GLabel("D-CK", 30, badGuesses.getLocation().getY() - badGuesses.getAscent() - 10);
+		guessedWord = new GLabel("", 30, badGuesses.getLocation().getY() - badGuesses.getAscent() - 10);
 		guessedWord.setFont("*-*-38");
 		add(guessedWord);
 		
@@ -47,10 +47,10 @@ public class HangmanCanvas extends GCanvas {
 		double legCenterX = this.getWidth()/2;
 		double legCenterY = this.getHeight()/2;
 		
-		this.rLeg = new GLine(legCenterX, legCenterY, legCenterX - LEG_X_OFFSET, legCenterY + LEG_Y_OFFSET);
+		this.rLeg = new GLine(legCenterX, legCenterY, legCenterX + LEG_X_OFFSET, legCenterY + LEG_Y_OFFSET);
 		rLeg.setVisible(false);
 		add(rLeg);
-		this.lLeg = new GLine(legCenterX, legCenterY, legCenterX + LEG_X_OFFSET, legCenterY + LEG_Y_OFFSET);
+		this.lLeg = new GLine(legCenterX, legCenterY, legCenterX - LEG_X_OFFSET, legCenterY + LEG_Y_OFFSET);
 		lLeg.setVisible(false);
 		add(lLeg);
 	}
@@ -104,7 +104,7 @@ public class HangmanCanvas extends GCanvas {
  * been guessed so far; unguessed letters are indicated by hyphens.
  */
 	public void displayWord(String word) {
-		/* You fill this in */
+		guessedWord.setLabel(word);
 	}
 
 /**
@@ -119,9 +119,8 @@ public class HangmanCanvas extends GCanvas {
 	}
 
 private void addBadLetter(char letter) {
-	
-	badGuesses.setLabel("Hello");
-	
+	String newGuesses = badGuesses.getLabel() + letter;
+	badGuesses.setLabel(newGuesses);
 }
 
 private void addBodyPart(int badGuessCount) {

@@ -37,6 +37,7 @@ public class Hangman extends ConsoleProgram {
 		isWordFinished = false;
 		setActualWord();
 		initGuessedWord();
+		canvas.displayWord(guessedWord);
 	}
 
     private void setActualWord() {
@@ -48,7 +49,7 @@ public class Hangman extends ConsoleProgram {
 		guessedWord = "";
 		for (int i = 0; i < actualWord.length(); i++) {
 			guessedWord = guessedWord + "-";
-		}	
+		}
 	}
 
     private void endGame() {
@@ -106,6 +107,7 @@ public class Hangman extends ConsoleProgram {
 		} else if (actualWord.contains(guessedLetter)) {
 			println("That guess is correct.");
 			updateGuessedWord(guessedLetter);
+			canvas.displayWord(guessedWord);
 		} else {
 			badGuessCount++;
 			canvas.noteIncorrectGuess(guessedLetter.charAt(0));
