@@ -16,7 +16,6 @@ public class HangmanCanvas extends GCanvas {
 		guessedWord = new GLabel("", 30, badGuesses.getLocation().getY() - badGuesses.getAscent() - 10);
 		guessedWord.setFont("*-*-38");
 		add(guessedWord);
-		
 	}
 
 	private void addArms() {

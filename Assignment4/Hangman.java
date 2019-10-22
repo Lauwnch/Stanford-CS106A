@@ -41,7 +41,7 @@ public class Hangman extends ConsoleProgram {
 	}
 
     private void setActualWord() {
-    	int wordIndex = rgen.nextInt(hl.getWordCount());
+    	int wordIndex = rgen.nextInt(0, hl.getWordCount()-1);
 		actualWord = hl.getWord(wordIndex);
 	}
     
@@ -118,7 +118,7 @@ public class Hangman extends ConsoleProgram {
 
     /*
      * Inputs - letter that is confirmed as being in actualWord
-     * Output - no return, guessedWord is updated to include the guessed letter in proper position
+     * Output - no return, guessedWord is updated to include the guessed letter(s) in proper position
      */
 	private void updateGuessedWord(String guessedLetter) {
 		int guessIndex = 0;
